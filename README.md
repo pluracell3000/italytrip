@@ -28,10 +28,17 @@ interaction, marker design, HUD, bottom sheet and mobile ergonomics.
 - **WHAT NEXT?** sheet with top-3 mock recommendations that react to run
   state (completed quests drop out; low energy boosts recovery quests)
 
+## Live
+
+Deployed to GitHub Pages on every push to `main`
+(`.github/workflows/deploy-pages.yml`):
+
+**https://pluracell3000.github.io/italytrip/**
+
 ## Stack
 
-Next.js (App Router) · TypeScript · Tailwind CSS v4 · MapLibre GL JS ·
-deployed on Vercel.
+Next.js (App Router, static export) · TypeScript · Tailwind CSS v4 ·
+MapLibre GL JS.
 
 The plan prefers Mapbox GL JS; the prototype uses **MapLibre + OpenFreeMap**
 because it needs no API token — the map style is fully custom either way, and
