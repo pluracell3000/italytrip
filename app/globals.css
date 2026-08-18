@@ -1,0 +1,227 @@
+@import "tailwindcss";
+/* Import MapLibre's CSS into the base layer so Tailwind utilities
+   (which live in the `utilities` layer) can override it — unlayered
+   CSS would otherwise always win over layered utilities. */
+@import "maplibre-gl/dist/maplibre-gl.css" layer(base);
+
+@theme {
+  /* Warm Mediterranean palette — see DESIGN.md */
+  --color-parchment: #f1e5cf;
+  --color-sand: #eaddc4;
+  --color-cream: #fffaf0;
+  --color-ink: #3b2e22;
+  --color-ink-soft: #6b5a47;
+  --color-terracotta: #c4572e;
+  --color-terracotta-deep: #a64524;
+  --color-olive: #7e8f58;
+  --color-forest: #567447;
+  --color-water: #3e8896;
+  --color-gold: #e3a44f;
+  --color-blush: #d98ca6;
+  --color-stone: #7d8ca3;
+
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+
+  --shadow-card: 0 8px 28px -8px rgb(59 46 34 / 0.28);
+  --shadow-chip: 0 2px 10px -2px rgb(59 46 34 / 0.22);
+
+  --animate-pop-in: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-fade-in: fade-in 0.25s ease-out both;
+  --animate-slide-up: slide-up 0.32s cubic-bezier(0.32, 0.72, 0, 1) both;
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Map markers are vanilla DOM elements (MapLibre markers), styled here.  */
+/* ---------------------------------------------------------------------- */
+
+@keyframes marker-halo {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+@keyframes player-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+/* NOTE: never set `position` on marker roots — MapLibre's own
+   `.maplibregl-marker { position: absolute }` (in layer(base)) must win,
+   or markers fall back into document flow and drift off their anchors. */
+.quest-marker {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quest-marker__halo {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  background: var(--marker-color, #c4572e);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.quest-marker__bubble {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #fffaf0;
+  border: 2.5px solid var(--marker-color, #c4572e);
+  box-shadow: 0 3px 12px -2px rgb(59 46 34 / 0.35);
+  font-size: 19px;
+  line-height: 1;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.quest-marker__badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 17px;
+  height: 17px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fffaf0;
+  box-shadow: 0 1px 4px rgb(59 46 34 / 0.3);
+}
+
+.quest-marker[data-selected="true"] .quest-marker__bubble {
+  transform: scale(1.18);
+}
+
+.quest-marker[data-state="recommended"] .quest-marker__halo {
+  animation: marker-halo 2.4s ease-out infinite;
+}
+
+.quest-marker[data-state="active"] .quest-marker__bubble {
+  border-color: #c4572e;
+  border-width: 3px;
+}
+.quest-marker[data-state="active"] .quest-marker__halo {
+  background: #c4572e;
+  animation: marker-halo 1.6s ease-out infinite;
+}
+
+.quest-marker[data-state="completed"] .quest-marker__bubble {
+  filter: saturate(0.15);
+  opacity: 0.75;
+}
+.quest-marker[data-state="completed"] .quest-marker__badge {
+  display: flex;
+  background: #567447;
+}
+
+.quest-marker[data-state="closed"] .quest-marker__bubble {
+  filter: grayscale(1);
+  opacity: 0.55;
+}
+.quest-marker[data-state="closed"] .quest-marker__badge {
+  display: flex;
+  background: #7d8ca3;
+  font-size: 9px;
+}
+
+.quest-marker[data-state="weather_sensitive"] .quest-marker__badge {
+  display: flex;
+  background: #e3a44f;
+  font-size: 9px;
+}
+
+.player-marker {
+  width: 26px;
+  height: 26px;
+}
+
+.player-marker__pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 9999px;
+  background: #c4572e;
+  animation: player-pulse 2.2s ease-out infinite;
+}
+
+.player-marker__dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #c4572e;
+  border: 3px solid #fffaf0;
+  box-shadow: 0 2px 10px rgb(59 46 34 / 0.4);
+}
+
+/* Keep MapLibre chrome quiet and out of the game UI. */
+.maplibregl-ctrl-attrib {
+  font-size: 9px;
+  background: rgb(241 229 207 / 0.7) !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: #6b5a47 !important;
+}
