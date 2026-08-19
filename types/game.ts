@@ -70,6 +70,9 @@ export type Quest = {
   /** Research source link (editorial provenance, not shown in UI yet). */
   sourceUrl?: string;
 
+  /** True for quests created from live web search — unverified, session-only. */
+  isDiscovery?: boolean;
+
   /** Lets the catalog pin a marker state (closed, weather_sensitive). */
   initialState?: Extract<
     QuestMarkerState,

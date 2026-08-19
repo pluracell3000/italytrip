@@ -25,6 +25,7 @@ export function createQuestMarkerElement(
   root.setAttribute("aria-label", `${quest.name} — ${quest.place}`);
   root.dataset.state = "available";
   root.dataset.selected = "false";
+  root.dataset.discovery = String(quest.isDiscovery ?? false);
 
   const halo = document.createElement("span");
   halo.className = "quest-marker__halo";

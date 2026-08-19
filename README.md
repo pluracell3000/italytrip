@@ -29,6 +29,10 @@ verified-coordinates pass.
 - Quest completion overlay with energy change
 - **WHAT NEXT?** sheet with top-3 mock recommendations that react to run
   state (completed quests drop out; low energy boosts recovery quests)
+- Quest search (🔍 in the HUD): accent-insensitive live filtering across
+  the catalog, plus **live web discovery** — search OpenStreetMap (free
+  Photon API, no key, no backend), pin results on the map as dashed
+  "discovery" markers and play them as session-only unverified quests
 
 ## Live
 

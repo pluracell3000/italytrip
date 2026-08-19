@@ -9,10 +9,11 @@ import QuestCompleteOverlay from "@/components/QuestCompleteOverlay";
 import SearchOverlay from "@/components/SearchOverlay";
 import WhatNextButton from "@/components/WhatNextButton";
 import WhatNextSheet from "@/components/WhatNextSheet";
-import { QUESTS, getQuestById } from "@/data/quests";
+import { QUESTS } from "@/data/quests";
 import { getMockRecommendations } from "@/lib/recommendations";
 import { clampStat } from "@/lib/utils";
-import type { QuestMarkerState, RunState } from "@/types/game";
+import { discoveryToQuest, type DiscoveredPlace } from "@/lib/webSearch";
+import type { Quest, QuestMarkerState, RunState } from "@/types/game";
 
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
@@ -47,16 +48,20 @@ export default function GameScreen() {
   const [whatNextOpen, setWhatNextOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [completion, setCompletion] = useState<Completion | null>(null);
+  // Session-only quests created from live web search (discoveries).
+  const [webQuests, setWebQuests] = useState<Quest[]>([]);
+
+  const allQuests = useMemo(() => [...QUESTS, ...webQuests], [webQuests]);
 
   const recommendations = useMemo(
-    () => getMockRecommendations(QUESTS, run),
-    [run],
+    () => getMockRecommendations(allQuests, run),
+    [allQuests, run],
   );
 
   const markerStates = useMemo(() => {
     const recommendedIds = new Set(recommendations.map((r) => r.quest.id));
     const states: Record<string, QuestMarkerState> = {};
-    for (const quest of QUESTS) {
+    for (const quest of allQuests) {
       if (run.completedQuestIds.includes(quest.id)) {
         states[quest.id] = "completed";
       } else if (quest.id === run.activeQuestId) {
@@ -68,13 +73,14 @@ export default function GameScreen() {
       }
     }
     return states;
-  }, [run, recommendations]);
+  }, [allQuests, run, recommendations]);
 
-  const selectedQuest = selectedQuestId ? getQuestById(selectedQuestId) : null;
-  const activeQuest = run.activeQuestId
-    ? getQuestById(run.activeQuestId)
-    : null;
-  const completedQuest = completion ? getQuestById(completion.questId) : null;
+  const findQuest = (id: string | null | undefined) =>
+    id ? allQuests.find((quest) => quest.id === id) : undefined;
+
+  const selectedQuest = findQuest(selectedQuestId);
+  const activeQuest = findQuest(run.activeQuestId);
+  const completedQuest = findQuest(completion?.questId);
 
   const handleSelectQuest = (questId: string | null) => {
     setSelectedQuestId(questId);
@@ -94,8 +100,18 @@ export default function GameScreen() {
     setRun((prev) => ({ ...prev, activeQuestId: null }));
   };
 
+  const handleDiscover = (place: DiscoveredPlace) => {
+    const quest = discoveryToQuest(place);
+    setWebQuests((prev) =>
+      prev.some((existing) => existing.id === quest.id)
+        ? prev
+        : [...prev, quest],
+    );
+    handleSelectQuest(quest.id);
+  };
+
   const handleCompleteQuest = (questId: string) => {
-    const quest = getQuestById(questId);
+    const quest = findQuest(questId);
     if (!quest) return;
 
     setRun((prev) => {
@@ -121,7 +137,7 @@ export default function GameScreen() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-parchment">
       <MapView
-        quests={QUESTS}
+        quests={allQuests}
         markerStates={markerStates}
         selectedQuestId={selectedQuestId}
         activeQuestId={run.activeQuestId}
@@ -149,9 +165,10 @@ export default function GameScreen() {
 
       {searchOpen && (
         <SearchOverlay
-          quests={QUESTS}
+          quests={allQuests}
           markerStates={markerStates}
           onSelect={handleSelectQuest}
+          onDiscover={handleDiscover}
           onClose={() => setSearchOpen(false)}
         />
       )}

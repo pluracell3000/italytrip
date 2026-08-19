@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import maplibregl, { Map as MaplibreMap, Marker } from "maplibre-gl";
 import { BASE_LOCATION } from "@/data/quests";
 import { arcCoordinates } from "@/lib/geo";
@@ -32,11 +32,15 @@ export default function MapView({
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MaplibreMap | null>(null);
-  const markersRef = useRef<Record<string, HTMLElement>>({});
+  const markersRef = useRef<
+    Record<string, { marker: Marker; element: HTMLElement }>
+  >({});
+  const [mapReady, setMapReady] = useState(false);
   const onSelectRef = useRef(onSelectQuest);
   onSelectRef.current = onSelectQuest;
 
-  // Create the map + markers once.
+  // Create the map once; markers are synced in a separate effect so the
+  // quest list can grow at runtime (web discoveries).
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
@@ -79,39 +83,52 @@ export default function MapView({
       .setLngLat([BASE_LOCATION.longitude, BASE_LOCATION.latitude])
       .addTo(map);
 
-    const markerElements: Record<string, HTMLElement> = {};
-    for (const quest of quests) {
-      const element = createQuestMarkerElement(quest, (id) =>
-        onSelectRef.current(id),
-      );
-      new Marker({ element })
-        .setLngLat([quest.longitude, quest.latitude])
-        .addTo(map);
-      markerElements[quest.id] = element;
-    }
-    markersRef.current = markerElements;
+    setMapReady(true);
 
     return () => {
       map.remove();
       mapRef.current = null;
       markersRef.current = {};
+      setMapReady(false);
     };
-    // Quests are a static catalog in Phase 0.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Keep one marker per quest: add newcomers, drop removed ones.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+
+    const questIds = new Set(quests.map((quest) => quest.id));
+    for (const [id, entry] of Object.entries(markersRef.current)) {
+      if (!questIds.has(id)) {
+        entry.marker.remove();
+        delete markersRef.current[id];
+      }
+    }
+    for (const quest of quests) {
+      if (markersRef.current[quest.id]) continue;
+      const element = createQuestMarkerElement(quest, (id) =>
+        onSelectRef.current(id),
+      );
+      const marker = new Marker({ element })
+        .setLngLat([quest.longitude, quest.latitude])
+        .addTo(map);
+      markersRef.current[quest.id] = { marker, element };
+    }
+  }, [quests, mapReady]);
 
   // Reflect marker states + selection onto the DOM elements.
   useEffect(() => {
     for (const quest of quests) {
-      const element = markersRef.current[quest.id];
-      if (!element) continue;
+      const entry = markersRef.current[quest.id];
+      if (!entry) continue;
       updateQuestMarkerElement(
-        element,
+        entry.element,
         markerStates[quest.id] ?? "available",
         quest.id === selectedQuestId,
       );
     }
-  }, [quests, markerStates, selectedQuestId]);
+  }, [quests, markerStates, selectedQuestId, mapReady]);
 
   // Ease the camera toward a selected quest, leaving room for the sheet.
   useEffect(() => {

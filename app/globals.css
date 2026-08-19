@@ -163,6 +163,11 @@ input[type="search"]::-webkit-search-cancel-button {
   transform: scale(1.18);
 }
 
+/* Web discoveries: dashed ring = unverified, not part of the curated map. */
+.quest-marker[data-discovery="true"] .quest-marker__bubble {
+  border-style: dashed;
+}
+
 .quest-marker[data-state="recommended"] .quest-marker__halo {
   animation: marker-halo 2.4s ease-out infinite;
 }
