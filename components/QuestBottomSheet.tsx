@@ -1,8 +1,73 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { CATEGORY_META } from "@/data/quests";
+import {
+  fetchPlaceLiveInfo,
+  placesEnabled,
+  type PlaceLiveInfo,
+} from "@/lib/places";
 import { cn, formatDelta } from "@/lib/utils";
 import type { Quest, QuestMarkerState } from "@/types/game";
+
+function GoogleLiveRow({ quest }: { quest: Quest }) {
+  const [info, setInfo] = useState<PlaceLiveInfo | null>(null);
+
+  useEffect(() => {
+    if (!placesEnabled) return;
+    let alive = true;
+    setInfo(null);
+    fetchPlaceLiveInfo(quest).then((result) => {
+      if (alive) setInfo(result);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [quest]);
+
+  if (!placesEnabled || !info) return null;
+
+  return (
+    <div className="mt-1.5">
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
+        {info.rating !== undefined && (
+          <span className="font-semibold tabular-nums">
+            <span className="text-gold">★</span> {info.rating.toFixed(1)}
+            {info.ratingCount !== undefined && (
+              <span className="font-medium text-ink-soft">
+                {" "}
+                ({info.ratingCount.toLocaleString()})
+              </span>
+            )}
+          </span>
+        )}
+        {info.rating !== undefined && info.openNow !== undefined && (
+          <span className="text-ink-soft/50" aria-hidden>
+            ·
+          </span>
+        )}
+        {info.openNow !== undefined && (
+          <span
+            className={cn(
+              "font-bold",
+              info.openNow ? "text-forest" : "text-terracotta",
+            )}
+          >
+            {info.openNow ? "Open now" : "Closed"}
+          </span>
+        )}
+      </p>
+      {info.todayHours && (
+        <p className="mt-0.5 text-xs font-medium text-ink-soft">
+          {info.todayHours}
+        </p>
+      )}
+      <p className="mt-0.5 text-[10px] text-ink-soft/60">
+        Ratings &amp; hours by Google
+      </p>
+    </div>
+  );
+}
 
 type QuestBottomSheetProps = {
   quest: Quest;
@@ -46,6 +111,7 @@ export default function QuestBottomSheet({
               {quest.name}
             </h2>
             <p className="text-sm font-medium text-ink-soft">{quest.place}</p>
+            <GoogleLiveRow quest={quest} />
           </div>
           <span
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl"

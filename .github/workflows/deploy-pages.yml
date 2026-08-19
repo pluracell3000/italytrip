@@ -34,6 +34,9 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /italytrip
+          # Optional: repo secret with a referrer-restricted Places API (New)
+          # key. Absent secret = ratings/hours feature stays off.
+          NEXT_PUBLIC_GOOGLE_PLACES_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

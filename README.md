@@ -59,7 +59,26 @@ npm run dev     # http://localhost:3000 — use a mobile viewport
 npm run build   # production build
 ```
 
-No environment variables, no database, no backend.
+No database, no backend. One optional environment variable:
+
+### Google ratings, hours & "Open now" (optional)
+
+Quest cards show Google-style rating, review count, open-now status and
+today's hours when a **Places API (New)** key is configured. Without it the
+feature is silently off. Setup (~5 min):
+
+1. In [Google Cloud Console](https://console.cloud.google.com/) create a
+   project (billing enabled — Places has a monthly free tier) and enable
+   **Places API (New)**.
+2. Create an API key. Under key restrictions set **Websites** to
+   `https://pluracell3000.github.io/*` and restrict the key to the
+   **Places API (New)** only. The key ships in the client bundle by
+   design — the referrer restriction is what protects it.
+3. In this repo: Settings → Secrets and variables → Actions → new secret
+   **`GOOGLE_PLACES_API_KEY`** with the key value.
+4. Re-run the "Deploy to GitHub Pages" workflow (or push to `main`).
+
+Locally: `NEXT_PUBLIC_GOOGLE_PLACES_KEY=... npm run dev`.
 
 ## Layout
 
