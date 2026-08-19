@@ -1,32 +1,49 @@
 import type { Quest, Recommendation, RunState } from "@/types/game";
 
-// Phase 0: hand-authored mock recommendations to validate the "top 3" UI.
-// The deterministic scoring engine (plan §10) replaces this in Phase 1 —
+// Mock top-3 recommendations to validate the "What next?" UI.
+// The priority order follows the research batch's "strongest experience
+// anchors" (docs/research/MOCALE_QUEST_RESEARCH_SUMMARY.md). The
+// deterministic scoring engine (plan §10) replaces this in Phase 1 —
 // keep the function signature, swap the internals.
 
 const MOCK_REASONS: Record<string, string> = {
-  "the-cool-escape": "Cold forest shade beats the afternoon heat",
-  "water-hunter": "River air, short drive, gelato as a bonus",
-  "easy-mode": "Low effort, big recovery — pizza then pool",
-  "stone-and-stories": "Six minutes away and lovely in soft light",
-  "gelato-radar": "Quick win: shade, piazza and pistachio",
-  "golden-hour": "Sunset is coming — the cliffs will glow",
-  "the-rainy-keep": "Frescoes and cafés, immune to weather",
-  "river-splash": "Calm water and picnic shade by the Arno",
+  loro: "Strongest all-rounder nearby: gorge, mill, village",
+  vallombrosa: "Cold forest shade beats the afternoon heat",
+  balze: "The signature scenery, ten minutes from base",
+  castelfranco: "Ultra-low-friction evening wander",
+  arezzo: "The big city quest, with indoor fallbacks",
+  pratomagno: "Biggest panorama when conditions are good",
+  "montevarchi-paleo": "Saber-toothed cats — rain-proof and kid-proof",
+  bandella: "Herons and wetland calm by the Arno",
+  "il-borro": "Tiny spectacular hamlet, big visual payoff",
+  "san-giovanni": "Easy town stroll that ends in dinner",
+  "new-california": "Low effort, big recovery — pizza then pool",
+  "gelato-turismo": "Quick win: gelato five minutes away",
   "return-to-base": "Energy is low — the pool is calling",
+  "acqua-zolfina": "The full Balze immersion, best in the morning",
 };
 
 const PRIORITY_ORDER = [
-  "the-cool-escape",
-  "water-hunter",
-  "easy-mode",
-  "stone-and-stories",
-  "gelato-radar",
-  "river-splash",
-  "the-rainy-keep",
-  "golden-hour",
+  "loro",
+  "vallombrosa",
+  "balze",
+  "castelfranco",
+  "arezzo",
+  "pratomagno",
+  "montevarchi-paleo",
+  "bandella",
+  "il-borro",
+  "san-giovanni",
+  "acqua-zolfina",
+  "gelato-turismo",
+  "new-california",
   "return-to-base",
 ];
+
+function priorityOf(quest: Quest): number {
+  const index = PRIORITY_ORDER.indexOf(quest.id);
+  return index === -1 ? PRIORITY_ORDER.length : index;
+}
 
 export function getMockRecommendations(
   quests: Quest[],
@@ -47,7 +64,7 @@ export function getMockRecommendations(
       const bRecovers = b.energyDelta > 0 ? 0 : 1;
       if (aRecovers !== bRecovers) return aRecovers - bRecovers;
     }
-    return PRIORITY_ORDER.indexOf(a.id) - PRIORITY_ORDER.indexOf(b.id);
+    return priorityOf(a) - priorityOf(b);
   });
 
   return ranked.slice(0, count).map((quest) => ({

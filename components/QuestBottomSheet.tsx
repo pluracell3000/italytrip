@@ -96,12 +96,17 @@ export default function QuestBottomSheet({
 
         {state === "weather_sensitive" && (
           <p className="mt-2 text-xs font-medium text-gold">
-            ⛅ Weather-sensitive — best on a clear evening.
+            ⛅ Weather-sensitive — pick your moment.
           </p>
         )}
         {isClosed && (
           <p className="mt-2 text-xs font-medium text-stone">
             ✕ Closed right now — mock opening hours land in Phase 1.
+          </p>
+        )}
+        {quest.note && (
+          <p className="mt-2 text-xs font-medium text-ink-soft">
+            ⚠️ {quest.note}
           </p>
         )}
 

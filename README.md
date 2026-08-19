@@ -7,9 +7,10 @@ press **What next?**, get three strong choices for *right now*.
 > Pokémon-style exploration + Zelda-style quest map + premium travel guide +
 > live context.
 
-**Status: Phase 0 — visual prototype.** Mock data, no real scoring, no live
-weather yet. The goal of this phase is to validate the visual identity, map
-interaction, marker design, HUD, bottom sheet and mobile ergonomics.
+**Status: Phase 0 prototype + verified content batch 1.** The quest catalog
+is seeded from an audited research package (31 quests — see
+`docs/research/`); scoring and live weather are still to come. Drive times
+are editorial estimates and coordinates are approximate.
 
 ## What's in the prototype
 
@@ -70,7 +71,8 @@ components/
   QuestCompleteOverlay.tsx
   WhatNextButton.tsx
   EnergyBar.tsx
-data/quests.ts          # mock quest catalog + category meta (human-editable)
+data/quests.ts          # quest catalog + category meta (human-editable "db")
+docs/research/          # audited research batches feeding the catalog
 lib/
   mapStyle.ts           # custom game-world map style
   recommendations.ts    # mock top-3 (Phase 1: deterministic scoring)

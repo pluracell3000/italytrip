@@ -53,7 +53,24 @@ export type Quest = {
   /** Net hunger effect. Negative = reduces hunger (food quests). */
   hungerDelta?: number;
 
-  /** Phase 0 only: lets mock data pin a marker state (closed, weather_sensitive). */
+  /** One honest caveat surfaced on the quest card (research "failure mode"). */
+  note?: string;
+
+  // Curated research fields (docs/research/) — consumed by the Phase 1
+  // deterministic scoring engine; carried in the catalog from day one.
+  /** 0 = fully exposed … 3 = deep shade / indoor */
+  shadeLevel?: 0 | 1 | 2 | 3;
+  /** 0 = none … 3 = strenuous */
+  walkingIntensity?: 0 | 1 | 2 | 3;
+  /** 0–10, how well it lands with kids */
+  kidScore?: number;
+  /** 0–10, visual payoff */
+  scenicScore?: number;
+  rainCompatible?: "yes" | "partial" | "no";
+  /** Research source link (editorial provenance, not shown in UI yet). */
+  sourceUrl?: string;
+
+  /** Lets the catalog pin a marker state (closed, weather_sensitive). */
   initialState?: Extract<
     QuestMarkerState,
     "available" | "closed" | "weather_sensitive"
