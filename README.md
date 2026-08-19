@@ -1,100 +1,71 @@
 # Mocale Quest
 
-A live, map-based exploration game for discovering places around **Borgo
-Mocale** and Tuscany — without following a rigid itinerary. Open the app,
-press **What next?**, get three strong choices for *right now*.
+A live, map-first field guide for discovering Tuscany around **Borgo Mocale**. Instead of building a rigid itinerary, open the app and get three thoughtful places that fit the weather, the hour, your energy and how hungry you are.
 
-> Pokémon-style exploration + Zelda-style quest map + premium travel guide +
-> live context.
+**Live:** https://pluracell3000.github.io/italytrip/
 
-**Status: Phase 0 prototype + verified content batches 1–2.** The quest
-catalog (49 quests) is merged and deduped from two audited research packages
-(see `docs/research/`); scoring and live weather are still to come. Drive
-times are editorial estimates and coordinates are approximate pending a
-verified-coordinates pass.
+## Product experience
 
-## What's in the prototype
+- Custom, low-noise map of the Upper Valdarno with 51 researched quests
+- Search across place names, villages, categories, descriptions and tags
+- Live local conditions from Open-Meteo, with a graceful offline fallback
+- Context-aware recommendations that combine editorial priority with heat, rain, time, energy and hunger
+- Quest details with drive time, effort, ideal window, honest caveats and one-tap Google Maps directions
+- Active routes, completion feedback and an evolving journey log
+- Local persistence—no account or backend required
+- Installable web-app manifest and mobile safe-area support
+- Keyboard-accessible dialogs, visible focus, touch-sized controls and reduced-motion support
+- Responsive bottom sheets on mobile and floating editorial panels on desktop
 
-- Full-screen stylized "game world" map of the Upper Valdarno (custom
-  MapLibre style — warm terrain, forests, rivers, subdued roads, no basemap
-  noise)
-- Pulsing player marker at Borgo Mocale
-- 10 mock quests across all categories (nature, water, village, farm, pizza,
-  gelato, sunset, rain-safe, base) with marker states: available,
-  recommended, active, completed, closed, weather-sensitive
-- Compact HUD: time, temperature (mocked), energy bar, hunger
-- Quest bottom sheet: why-go, chips, best time, energy impact, Start /
-  Navigate (opens Google Maps) / Close
-- Active quest: banner + dotted route trail on the map, camera fit
-- Quest completion overlay with energy change
-- **WHAT NEXT?** sheet with top-3 mock recommendations that react to run
-  state (completed quests drop out; low energy boosts recovery quests)
-- Quest search (🔍 in the HUD): accent-insensitive live filtering across
-  the catalog, plus **live web discovery** — search OpenStreetMap (free
-  Photon API, no key, no backend), pin results on the map as dashed
-  "discovery" markers and play them as session-only unverified quests
+The catalog is merged and deduplicated from two audited research batches in `docs/research/`. Drive times remain editorial estimates and coordinates are approximate pending a dedicated verification pass. Availability flags are editorial rather than live business data, so time-sensitive places should be confirmed before leaving.
 
-## Live
-
-Deployed to GitHub Pages on every push to `main`
-(`.github/workflows/deploy-pages.yml`):
-
-**https://pluracell3000.github.io/italytrip/**
+Search can also discover nearby OpenStreetMap places through the free Photon API. These results are clearly marked as unverified, stay in the current browser session and never alter the curated catalog.
 
 ## Stack
 
-Next.js (App Router, static export) · TypeScript · Tailwind CSS v4 ·
-MapLibre GL JS.
+Next.js 16 (App Router, static export) · React 19 · TypeScript · Tailwind CSS 4 · MapLibre GL · OpenFreeMap · Open-Meteo.
 
-The plan prefers Mapbox GL JS; the prototype uses **MapLibre + OpenFreeMap**
-because it needs no API token — the map style is fully custom either way, and
-swapping providers only touches `lib/mapStyle.ts` + the map constructor in
-`components/MapView.tsx`.
+The app has no secrets, database or server runtime. Weather is fetched directly in the browser and day progress stays in `localStorage`.
 
 ## Develop
 
+Requires Node.js 22 or newer.
+
 ```bash
 npm install
-npm run dev     # http://localhost:3000 — use a mobile viewport
-npm run build   # production build
+npm run dev
+npm run check
+npm run build
 ```
 
-No environment variables, no database, no backend.
+The dev server runs at `http://localhost:3000`. The production build is exported to `out/`.
 
-## Layout
+## Project map
 
-```
-app/                    # App Router shell (layout, page, global styles)
+```text
+app/                    App shell, metadata, manifest and global design tokens
 components/
-  GameScreen.tsx        # run state + screen orchestration
-  MapView.tsx           # MapLibre map, markers, route trail
-  QuestMarker.tsx       # marker DOM factories (states via data-attributes)
-  GameHUD.tsx           # time / temp / energy / hunger
-  QuestBottomSheet.tsx  # quest detail card
-  WhatNextSheet.tsx     # top-3 recommendations
-  ActiveQuestBanner.tsx
-  QuestCompleteOverlay.tsx
-  WhatNextButton.tsx
-  EnergyBar.tsx
-data/quests.ts          # quest catalog + category meta (human-editable "db")
-docs/research/          # audited research batches feeding the catalog
+  GameScreen.tsx        Saved run state and screen orchestration
+  MapView.tsx           MapLibre map, markers, route trail and camera controls
+  GameHUD.tsx           Live weather, energy, hunger and search entry
+  WelcomeScreen.tsx     First-run product framing
+  SearchOverlay.tsx     Local-first catalog search
+  WhatNextSheet.tsx     Top-three adaptive recommendations
+  QuestBottomSheet.tsx  Editorial place details and actions
+  JourneySheet.tsx      Completed-place journal and progress
+  Icon.tsx              Shared dependency-free SVG icon system
+data/quests.ts          Human-editable researched place catalog
+docs/research/          Audited source batches and editorial decisions
+hooks/                  Dialog accessibility and live weather hooks
 lib/
-  mapStyle.ts           # custom game-world map style
-  recommendations.ts    # mock top-3 (Phase 1: deterministic scoring)
-  geo.ts                # route arc
-  utils.ts
-types/game.ts           # Quest, RunState, marker states
-DESIGN.md               # visual design system
+  recommendations.ts    Deterministic context-aware ranking
+  search.ts             Accent-insensitive catalog search
+  weather.ts            Open-Meteo client and WMO condition mapping
+  mapStyle.ts           Custom game-world map style
+types/                  Product, map and icon types
+DESIGN.md               Visual and interaction principles
 ```
 
-## Roadmap
+## Deployment
 
-- **Phase 0 — visual prototype** ← you are here
-- **Phase 1 — core game**: Start Now, energy/hunger simulation, deterministic
-  scoring, localStorage persistence
-- **Phase 2 — live context**: geolocation, weather, sunset,
-  weather-sensitive ranking
-- **Phase 3 — real content**: 30–40 curated POIs, opening hours, images
-- **Phase 4 — PWA polish**: installability, offline degradation, icons
-
-See `DESIGN.md` for the visual language.
+Every push to `main` runs `.github/workflows/deploy-pages.yml`, builds with `NEXT_PUBLIC_BASE_PATH=/italytrip`, and publishes the static `out/` directory to GitHub Pages.

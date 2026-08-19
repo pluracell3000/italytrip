@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Outfit } from "next/font/google";
 import "./globals.css";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
@@ -15,18 +17,27 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Mocale Quest",
+  title: "Mocale Quest · A live Tuscany field guide",
   description:
-    "A live, map-based exploration game for discovering Tuscany around Borgo Mocale — one quest at a time.",
+    "A live, map-based field guide for discovering Tuscany around Borgo Mocale—one good idea at a time.",
+  applicationName: "Mocale Quest",
+  manifest: `${basePath}/manifest.webmanifest`,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Mocale Quest",
+  },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
-  themeColor: "#F1E5CF",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F1E5CF" },
+    { media: "(prefers-color-scheme: dark)", color: "#3B2E22" },
+  ],
 };
 
 export default function RootLayout({
