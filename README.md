@@ -7,10 +7,11 @@ press **What next?**, get three strong choices for *right now*.
 > Pokémon-style exploration + Zelda-style quest map + premium travel guide +
 > live context.
 
-**Status: Phase 0 prototype + verified content batch 1.** The quest catalog
-is seeded from an audited research package (31 quests — see
-`docs/research/`); scoring and live weather are still to come. Drive times
-are editorial estimates and coordinates are approximate.
+**Status: Phase 0 prototype + verified content batches 1–2.** The quest
+catalog (49 quests) is merged and deduped from two audited research packages
+(see `docs/research/`); scoring and live weather are still to come. Drive
+times are editorial estimates and coordinates are approximate pending a
+verified-coordinates pass.
 
 ## What's in the prototype
 

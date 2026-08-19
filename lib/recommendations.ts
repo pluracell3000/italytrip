@@ -1,42 +1,50 @@
 import type { Quest, Recommendation, RunState } from "@/types/game";
 
 // Mock top-3 recommendations to validate the "What next?" UI.
-// The priority order follows the research batch's "strongest experience
-// anchors" (docs/research/MOCALE_QUEST_RESEARCH_SUMMARY.md). The
-// deterministic scoring engine (plan §10) replaces this in Phase 1 —
+// Priority follows research batch 2's "strongest 10 overall experiences"
+// (docs/research/MOCALE_QUEST_RESEARCH_BATCH2.md), then batch 1 anchors.
+// The deterministic scoring engine (plan §10) replaces this in Phase 1 —
 // keep the function signature, swap the internals.
 
 const MOCK_REASONS: Record<string, string> = {
   loro: "Strongest all-rounder nearby: gorge, mill, village",
+  "acqua-zolfina": "The Balze loop Leonardo painted — go early",
   vallombrosa: "Cold forest shade beats the afternoon heat",
-  balze: "The signature scenery, ten minutes from base",
-  castelfranco: "Ultra-low-friction evening wander",
   arezzo: "The big city quest, with indoor fallbacks",
-  pratomagno: "Biggest panorama when conditions are good",
+  poppi: "Best-preserved castle in Tuscany, rain-proof",
+  gropina: "Cool Romanesque interior, quick add-on",
+  castelfranco: "Ultra-low-friction evening wander",
+  "il-borro": "Ferragamo's hamlet — artisan shops and views",
+  piantravigne: "Golden hour over the Balze",
+  pratomagno: "1592 m of panorama and cool air",
+  "ciuffenna-massette": "Shallow river pools — made for hot afternoons",
+  "setteponti-drive": "Low-energy scenic drive linking the hits",
   "montevarchi-paleo": "Saber-toothed cats — rain-proof and kid-proof",
   bandella: "Herons and wetland calm by the Arno",
-  "il-borro": "Tiny spectacular hamlet, big visual payoff",
-  "san-giovanni": "Easy town stroll that ends in dinner",
-  "new-california": "Low effort, big recovery — pizza then pool",
+  "osteria-fondaccio": "The best-confirmed proper dinner around",
   "gelato-turismo": "Quick win: gelato five minutes away",
+  "pizzeria-le-balze": "Pizza with outdoor games — easy family night",
   "return-to-base": "Energy is low — the pool is calling",
-  "acqua-zolfina": "The full Balze immersion, best in the morning",
 };
 
 const PRIORITY_ORDER = [
   "loro",
+  "acqua-zolfina",
   "vallombrosa",
-  "balze",
-  "castelfranco",
   "arezzo",
+  "poppi",
+  "gropina",
+  "castelfranco",
+  "il-borro",
+  "piantravigne",
   "pratomagno",
+  "ciuffenna-massette",
+  "setteponti-drive",
   "montevarchi-paleo",
   "bandella",
-  "il-borro",
-  "san-giovanni",
-  "acqua-zolfina",
+  "osteria-fondaccio",
   "gelato-turismo",
-  "new-california",
+  "pizzeria-le-balze",
   "return-to-base",
 ];
 
