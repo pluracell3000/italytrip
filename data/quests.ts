@@ -1,4 +1,5 @@
 import type { LatLng, Quest, QuestCategory } from "@/types/game";
+import type { IconName } from "@/types/icon";
 
 // Home base: Borgo Mocale, Via Lama 26, Castelfranco Piandiscò (~480 m,
 // Lama frazione, ~2.5 km from Castelfranco di Sopra). Coordinates are
@@ -10,18 +11,18 @@ export const BASE_LOCATION: LatLng = {
 
 export const CATEGORY_META: Record<
   QuestCategory,
-  { label: string; glyph: string; color: string }
+  { label: string; icon: IconName; color: string }
 > = {
-  nature: { label: "Nature", glyph: "🌳", color: "#567447" },
-  water: { label: "Water", glyph: "💦", color: "#3E8896" },
-  village: { label: "Village", glyph: "🏰", color: "#A2653F" },
-  farm: { label: "Farm & Kids", glyph: "🐐", color: "#8A6D3B" },
-  food: { label: "Food", glyph: "🍝", color: "#C4572E" },
-  pizza: { label: "Pizza", glyph: "🍕", color: "#C4572E" },
-  gelato: { label: "Gelato", glyph: "🍦", color: "#D98CA6" },
-  sunset: { label: "Sunset & View", glyph: "🌅", color: "#E3A44F" },
-  rainsafe: { label: "Rain-safe", glyph: "🌧", color: "#7D8CA3" },
-  base: { label: "Base", glyph: "🏡", color: "#7E8F58" },
+  nature: { label: "Nature", icon: "tree", color: "#567447" },
+  water: { label: "Water", icon: "waves", color: "#3E8896" },
+  village: { label: "Village", icon: "landmark", color: "#A2653F" },
+  farm: { label: "Farm & kids", icon: "sprout", color: "#8A6D3B" },
+  food: { label: "Food", icon: "utensils", color: "#B14A27" },
+  pizza: { label: "Pizza", icon: "pizza", color: "#B14A27" },
+  gelato: { label: "Gelato", icon: "sparkles", color: "#B45F7D" },
+  sunset: { label: "Sunset", icon: "sunset", color: "#B87518" },
+  rainsafe: { label: "Rain-safe", icon: "umbrella", color: "#7D8CA3" },
+  base: { label: "Home base", icon: "home", color: "#657A40" },
 };
 
 // Quest catalog — merged from two audited research batches (docs/research/):

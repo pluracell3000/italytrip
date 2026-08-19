@@ -1,15 +1,17 @@
 import { CATEGORY_META } from "@/data/quests";
+import { createIconSvgElement } from "@/components/Icon";
 import type { Quest, QuestMarkerState } from "@/types/game";
+import type { IconName } from "@/types/icon";
 
 // MapLibre markers take plain DOM elements, so these are element factories
 // rather than rendered React components. All visual states are driven by
 // data-attributes + CSS (see globals.css) so updating a marker never
 // requires re-creating it.
 
-const STATE_BADGES: Partial<Record<QuestMarkerState, string>> = {
-  completed: "✓",
-  closed: "✕",
-  weather_sensitive: "!",
+const STATE_BADGES: Partial<Record<QuestMarkerState, IconName>> = {
+  completed: "check",
+  closed: "x",
+  weather_sensitive: "cloud-sun",
 };
 
 export function createQuestMarkerElement(
@@ -32,7 +34,7 @@ export function createQuestMarkerElement(
 
   const bubble = document.createElement("span");
   bubble.className = "quest-marker__bubble";
-  bubble.textContent = meta.glyph;
+  bubble.append(createIconSvgElement(meta.icon));
 
   const badge = document.createElement("span");
   badge.className = "quest-marker__badge";
@@ -55,7 +57,11 @@ export function updateQuestMarkerElement(
   element.dataset.state = state;
   element.dataset.selected = String(selected);
   const badge = element.querySelector<HTMLElement>(".quest-marker__badge");
-  if (badge) badge.textContent = STATE_BADGES[state] ?? "";
+  if (badge) {
+    badge.replaceChildren();
+    const badgeIcon = STATE_BADGES[state];
+    if (badgeIcon) badge.append(createIconSvgElement(badgeIcon));
+  }
 }
 
 export function createPlayerMarkerElement(): HTMLElement {

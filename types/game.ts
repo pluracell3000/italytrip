@@ -1,9 +1,6 @@
 // Core game types for Mocale Quest.
 //
-// Phase 0 note: this is a pragmatic subset of the full Quest schema from the
-// product plan (§11). It carries exactly what the visual prototype renders.
-// Phase 1 will converge it with the full schema (opening hours, ideal
-// temperature ranges, base quality, etc.) when deterministic scoring lands.
+// Core domain types for the map, recommendation engine, and saved day state.
 
 export type QuestCategory =
   | "nature"
@@ -73,7 +70,7 @@ export type Quest = {
   /** True for quests created from live web search — unverified, session-only. */
   isDiscovery?: boolean;
 
-  /** Lets the catalog pin a marker state (closed, weather_sensitive). */
+  /** Lets the curated catalog pin a marker state (closed, weather-sensitive). */
   initialState?: Extract<
     QuestMarkerState,
     "available" | "closed" | "weather_sensitive"
@@ -88,6 +85,17 @@ export type RunState = {
   hunger: number;
   activeQuestId: string | null;
   completedQuestIds: string[];
+};
+
+export type WeatherSnapshot = {
+  temperature: number;
+  apparentTemperature: number;
+  weatherCode: number;
+  isDay: boolean;
+  precipitation: number;
+  label: string;
+  sunset: string | null;
+  updatedAt: number;
 };
 
 export type Recommendation = {

@@ -1,4 +1,4 @@
-# Mocale Quest — Visual Design System (v0.1)
+# Mocale Quest — Visual Design System (v1.0)
 
 The intended feeling: **Pokémon-style exploration + Zelda-style quest map +
 premium travel editorial + live context.** Playful but restrained — never
@@ -23,13 +23,13 @@ loud voice; category colors stay muted and earthy.
 | `cream` | `#FFFAF0` | Cards, sheets, marker bubbles |
 | `ink` | `#3B2E22` | Primary text, dark surfaces |
 | `ink-soft` | `#6B5A47` | Secondary text |
-| `terracotta` | `#C4572E` | Primary CTA, active quest, player |
-| `terracotta-deep` | `#A64524` | Pressed states |
-| `olive` | `#7E8F58` | Positive energy, success |
+| `terracotta` | `#B14A27` | Primary CTA, active quest, player |
+| `terracotta-deep` | `#963A1F` | Hover and pressed states |
+| `olive` | `#657A40` | Positive energy, success |
 | `forest` | `#567447` | Nature category, complete action |
 | `water` | `#3E8896` | Water category |
-| `gold` | `#E3A44F` | Sunset category, warnings |
-| `blush` | `#D98CA6` | Gelato category |
+| `gold` | `#B87518` | Sunset category, warnings |
+| `blush` | `#B45F7D` | Gelato category |
 | `stone` | `#7D8CA3` | Rain-safe category, disabled |
 
 Rules:
@@ -68,8 +68,8 @@ Custom MapLibre style (`lib/mapStyle.ts`), built from scratch:
 
 ## 5. Markers
 
-- **Quest marker**: 44px cream bubble, 2.5px category-colored ring, category
-  glyph (emoji as Phase 0 placeholders — custom cohesive icons planned).
+- **Quest marker**: 48px cream bubble, 2.5px category-colored ring, category
+  icon from the shared monoline SVG system.
 - **States** (data-attributes + CSS in `globals.css`):
   - `recommended` — soft pulsing halo in the category color
   - `active` — terracotta ring + faster pulse
@@ -99,4 +99,7 @@ terrain.
 - One-handed: all actions in the bottom half; primary CTA bottom-center.
 - Tap targets ≥44px; `active:scale` feedback on every button.
 - High-contrast text on cream/parchment for outdoor glare.
-- `100dvh`, `viewport-fit=cover`, no user scaling — it's an app, not a page.
+- `100dvh` and `viewport-fit=cover`; browser zoom remains available.
+- Bottom sheets become floating, scroll-contained panels at desktop widths.
+- All modal surfaces trap focus, close with Escape and restore focus on exit.
+- Reduced-motion preferences collapse non-essential animation.

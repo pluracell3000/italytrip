@@ -20,6 +20,7 @@ type MapViewProps = {
   markerStates: Record<string, QuestMarkerState>;
   selectedQuestId: string | null;
   activeQuestId: string | null;
+  viewCommand: { type: "home" | "all"; nonce: number };
   onSelectQuest: (questId: string | null) => void;
 };
 
@@ -28,6 +29,7 @@ export default function MapView({
   markerStates,
   selectedQuestId,
   activeQuestId,
+  viewCommand,
   onSelectQuest,
 }: MapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,7 +73,7 @@ export default function MapView({
         source: ROUTE_SOURCE_ID,
         layout: { "line-cap": "round", "line-join": "round" },
         paint: {
-          "line-color": "#C4572E",
+          "line-color": "#B14A27",
           "line-width": 4,
           "line-dasharray": [0.1, 1.8],
           "line-opacity": 0.9,
@@ -194,5 +196,39 @@ export default function MapView({
     }
   }, [quests, activeQuestId]);
 
-  return <div ref={containerRef} className="absolute inset-0" />;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || viewCommand.nonce === 0) return;
+
+    if (viewCommand.type === "home") {
+      map.easeTo({
+        center: [BASE_LOCATION.longitude, BASE_LOCATION.latitude],
+        zoom: 11.2,
+        duration: 650,
+      });
+      return;
+    }
+
+    const longitudes = quests.map((quest) => quest.longitude);
+    const latitudes = quests.map((quest) => quest.latitude);
+    map.fitBounds(
+      [
+        [Math.min(...longitudes), Math.min(...latitudes)],
+        [Math.max(...longitudes), Math.max(...latitudes)],
+      ],
+      {
+        padding: { top: 130, bottom: 110, left: 45, right: 45 },
+        duration: 750,
+      },
+    );
+  }, [quests, viewCommand]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="absolute inset-0"
+      role="application"
+      aria-label="Interactive map of curated places around Borgo Mocale"
+    />
+  );
 }
