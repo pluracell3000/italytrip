@@ -6,6 +6,7 @@ import EnergyBar from "@/components/EnergyBar";
 type GameHUDProps = {
   energy: number;
   hunger: number;
+  onSearchClick: () => void;
 };
 
 // Phase 0: weather is a hardcoded mock. Live weather arrives in Phase 2.
@@ -18,7 +19,11 @@ function formatTime(date: Date): string {
   });
 }
 
-export default function GameHUD({ energy, hunger }: GameHUDProps) {
+export default function GameHUD({
+  energy,
+  hunger,
+  onSearchClick,
+}: GameHUDProps) {
   // Avoid a server/client hydration mismatch by filling the clock in an effect.
   const [time, setTime] = useState<string | null>(null);
 
@@ -61,6 +66,17 @@ export default function GameHUD({ energy, hunger }: GameHUDProps) {
           </span>
           <span className="text-sm font-semibold tabular-nums">{hunger}</span>
         </div>
+
+        <div className="h-8 w-px bg-ink/10" />
+
+        <button
+          type="button"
+          onClick={onSearchClick}
+          aria-label="Search quests"
+          className="-mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sand text-base transition-transform active:scale-90"
+        >
+          🔍
+        </button>
       </div>
     </header>
   );

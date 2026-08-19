@@ -6,6 +6,7 @@ import ActiveQuestBanner from "@/components/ActiveQuestBanner";
 import GameHUD from "@/components/GameHUD";
 import QuestBottomSheet from "@/components/QuestBottomSheet";
 import QuestCompleteOverlay from "@/components/QuestCompleteOverlay";
+import SearchOverlay from "@/components/SearchOverlay";
 import WhatNextButton from "@/components/WhatNextButton";
 import WhatNextSheet from "@/components/WhatNextSheet";
 import { QUESTS, getQuestById } from "@/data/quests";
@@ -44,6 +45,7 @@ export default function GameScreen() {
   const [run, setRun] = useState<RunState>(INITIAL_RUN);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [whatNextOpen, setWhatNextOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [completion, setCompletion] = useState<Completion | null>(null);
 
   const recommendations = useMemo(
@@ -76,7 +78,10 @@ export default function GameScreen() {
 
   const handleSelectQuest = (questId: string | null) => {
     setSelectedQuestId(questId);
-    if (questId) setWhatNextOpen(false);
+    if (questId) {
+      setWhatNextOpen(false);
+      setSearchOpen(false);
+    }
   };
 
   const handleStartQuest = (questId: string) => {
@@ -123,7 +128,11 @@ export default function GameScreen() {
         onSelectQuest={handleSelectQuest}
       />
 
-      <GameHUD energy={run.energy} hunger={run.hunger} />
+      <GameHUD
+        energy={run.energy}
+        hunger={run.hunger}
+        onSearchClick={() => setSearchOpen(true)}
+      />
 
       {activeQuest && (
         <ActiveQuestBanner
@@ -134,8 +143,17 @@ export default function GameScreen() {
         />
       )}
 
-      {!selectedQuest && !whatNextOpen && !completion && (
+      {!selectedQuest && !whatNextOpen && !completion && !searchOpen && (
         <WhatNextButton onClick={() => setWhatNextOpen(true)} />
+      )}
+
+      {searchOpen && (
+        <SearchOverlay
+          quests={QUESTS}
+          markerStates={markerStates}
+          onSelect={handleSelectQuest}
+          onClose={() => setSearchOpen(false)}
+        />
       )}
 
       {selectedQuest && (

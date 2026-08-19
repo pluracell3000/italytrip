@@ -63,6 +63,12 @@ body {
   height: 100%;
 }
 
+/* The search overlay renders its own clear button. */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 /* ---------------------------------------------------------------------- */
 /* Map markers are vanilla DOM elements (MapLibre markers), styled here.  */
 /* ---------------------------------------------------------------------- */
