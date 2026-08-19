@@ -87,6 +87,16 @@ export type RunState = {
   completedQuestIds: string[];
 };
 
+export type HourlyForecast = {
+  /** Local ISO hour in trip time (Europe/Rome), e.g. "2026-08-20T09:00". */
+  time: string;
+  temperature: number;
+  apparentTemperature: number;
+  weatherCode: number;
+  isDay: boolean;
+  precipitation: number;
+};
+
 export type WeatherSnapshot = {
   temperature: number;
   apparentTemperature: number;
@@ -96,6 +106,8 @@ export type WeatherSnapshot = {
   label: string;
   sunset: string | null;
   updatedAt: number;
+  /** Hour-by-hour forecast covering the plan-ahead horizon. */
+  hourly?: HourlyForecast[];
 };
 
 export type Recommendation = {

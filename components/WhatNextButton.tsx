@@ -19,7 +19,7 @@ export default function WhatNextButton({ onClick }: WhatNextButtonProps) {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-display text-sm font-bold leading-tight">Find my next stop</span>
-          <span className="mt-0.5 block text-[11px] text-cream/90">Three picks for the weather, time and your pace</span>
+          <span className="mt-0.5 block text-[11px] text-cream/90">Three picks for now—or plan tomorrow morning</span>
         </span>
         <Icon name="chevron-right" className="size-5 transition-transform group-hover:translate-x-0.5" />
       </button>

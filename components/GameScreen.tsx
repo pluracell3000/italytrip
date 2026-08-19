@@ -15,8 +15,15 @@ import WhatNextButton from "@/components/WhatNextButton";
 import WhatNextSheet from "@/components/WhatNextSheet";
 import { QUESTS } from "@/data/quests";
 import useWeather from "@/hooks/useWeather";
+import {
+  formatPlanTime,
+  FRESH_DAY_STATS,
+  isSameLocalDay,
+  runForPlanTime,
+} from "@/lib/planning";
 import { getRecommendations } from "@/lib/recommendations";
 import { clampStat } from "@/lib/utils";
+import { forecastFor } from "@/lib/weather";
 import { discoveryToQuest, type DiscoveredPlace } from "@/lib/webSearch";
 import type { Quest, QuestMarkerState, RunState } from "@/types/game";
 
@@ -45,8 +52,8 @@ const ONBOARDING_KEY = "mocale-quest.onboarded.v1";
 
 const INITIAL_RUN: RunState = {
   startedAt: 0,
-  energy: 88,
-  hunger: 35,
+  energy: FRESH_DAY_STATS.energy,
+  hunger: FRESH_DAY_STATS.hunger,
   activeQuestId: null,
   completedQuestIds: [],
 };
@@ -66,6 +73,8 @@ export default function GameScreen() {
   const [run, setRun] = useState<RunState>(INITIAL_RUN);
   const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
   const [whatNextOpen, setWhatNextOpen] = useState(false);
+  // Future start time for the plan-ahead lens; null = "plan for right now".
+  const [planAt, setPlanAt] = useState<Date | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [journeyOpen, setJourneyOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
@@ -122,9 +131,27 @@ export default function GameScreen() {
     }
   }, [hydrated, run]);
 
+  // When planning a different day, rank with rested stats instead of
+  // dragging tonight's tiredness into tomorrow morning's picks.
+  const planRun = useMemo(
+    () => (planAt ? runForPlanTime(run, planAt) : run),
+    [run, planAt],
+  );
+
+  // For a future start, swap live conditions for that hour's forecast; if the
+  // hour is outside the forecast window, rank on time of day alone.
+  const planWeather = useMemo(
+    () => (planAt ? (weather ? forecastFor(weather, planAt) : null) : weather),
+    [weather, planAt],
+  );
+
   const recommendations = useMemo(
-    () => getRecommendations(allQuests, run, weather),
-    [allQuests, run, weather],
+    () =>
+      getRecommendations(allQuests, planRun, planWeather, {
+        at: planAt ?? undefined,
+        planning: planAt !== null,
+      }),
+    [allQuests, planRun, planWeather, planAt],
   );
 
   const markerStates = useMemo(() => {
@@ -171,7 +198,15 @@ export default function GameScreen() {
     }));
     setSelectedQuestId(null);
     setWhatNextOpen(false);
+    setPlanAt(null);
     setJourneyOpen(false);
+  };
+
+  const handleWhatNextClose = () => {
+    setWhatNextOpen(false);
+    // The plan-ahead lens lives inside the sheet; leaving it returns the map
+    // to the present.
+    setPlanAt(null);
   };
 
   const handleDiscover = (place: DiscoveredPlace) => {
@@ -218,9 +253,18 @@ export default function GameScreen() {
     window.setTimeout(() => setWhatNextOpen(true), 260);
   };
 
-  const contextLabel = weather
-    ? `${weather.temperature}° and ${weather.label.toLowerCase()} around Borgo Mocale · updated live`
-    : "Around Borgo Mocale · tuned to your energy and the time of day";
+  let contextLabel: string;
+  if (planAt) {
+    const timeLabel = formatPlanTime(planAt);
+    const rested = !isSameLocalDay(planAt, new Date());
+    contextLabel = planWeather
+      ? `Starting ${timeLabel} · forecast ${planWeather.temperature}° and ${planWeather.label.toLowerCase()}${rested ? " · assuming a rested start" : ""}`
+      : `Starting ${timeLabel} · no forecast for that hour yet, ranked by time of day`;
+  } else {
+    contextLabel = weather
+      ? `${weather.temperature}° and ${weather.label.toLowerCase()} around Borgo Mocale · updated live`
+      : "Around Borgo Mocale · tuned to your energy and the time of day";
+  }
 
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-parchment">
@@ -306,9 +350,11 @@ export default function GameScreen() {
         <WhatNextSheet
           recommendations={recommendations}
           contextLabel={contextLabel}
+          planAt={planAt}
+          onPlanChange={setPlanAt}
           onStart={handleStartQuest}
           onInspect={handleSelectQuest}
-          onClose={() => setWhatNextOpen(false)}
+          onClose={handleWhatNextClose}
         />
       )}
 

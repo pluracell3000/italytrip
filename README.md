@@ -10,6 +10,7 @@ A live, map-first field guide for discovering Tuscany around **Borgo Mocale**. I
 - Search across place names, villages, categories, descriptions and tags
 - Live local conditions from Open-Meteo, with a graceful offline fallback
 - Context-aware recommendations that combine editorial priority with heat, rain, time, energy and hunger
+- Plan-ahead start times: preset chips (this evening, tomorrow morning, tomorrow afternoon) or a custom moment up to 48 h out, ranked against that hour's forecast and assuming a rested start on a new day
 - Quest details with drive time, effort, ideal window, honest caveats and one-tap Google Maps directions
 - Active routes, completion feedback and an evolving journey log
 - Local persistence—no account or backend required
@@ -71,7 +72,7 @@ components/
   GameHUD.tsx           Live weather, energy, hunger and search entry
   WelcomeScreen.tsx     First-run product framing
   SearchOverlay.tsx     Local-first catalog search
-  WhatNextSheet.tsx     Top-three adaptive recommendations
+  WhatNextSheet.tsx     Top-three adaptive recommendations, now or plan-ahead
   QuestBottomSheet.tsx  Editorial place details and actions
   JourneySheet.tsx      Completed-place journal and progress
   Icon.tsx              Shared dependency-free SVG icon system
@@ -80,8 +81,9 @@ docs/research/          Audited source batches and editorial decisions
 hooks/                  Dialog accessibility and live weather hooks
 lib/
   recommendations.ts    Deterministic context-aware ranking
+  planning.ts           Plan-ahead start times: presets, labels, horizons
   search.ts             Accent-insensitive catalog search
-  weather.ts            Open-Meteo client and WMO condition mapping
+  weather.ts            Open-Meteo client, hourly forecast and WMO mapping
   mapStyle.ts           Custom game-world map style
 types/                  Product, map and icon types
 DESIGN.md               Visual and interaction principles

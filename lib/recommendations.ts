@@ -114,6 +114,7 @@ function reasonFor(
   run: RunState,
   weather: WeatherSnapshot | null,
   hour: number,
+  planning: boolean,
 ): string {
   if (run.energy < 45 && quest.energyDelta > 0) {
     return "Your energy is running low—this is one of the gentlest resets nearby";
@@ -126,13 +127,19 @@ function reasonFor(
     isWetWeather(weather.weatherCode) &&
     (quest.rainCompatible === "yes" || hasCategory(quest, ["rainsafe"]))
   ) {
-    return "Rain is in the air—this keeps the day interesting and mostly dry";
+    return planning
+      ? "Rain is in the forecast—this keeps the day interesting and mostly dry"
+      : "Rain is in the air—this keeps the day interesting and mostly dry";
   }
   if (weather && weather.temperature >= 29 && (quest.shadeLevel ?? 0) >= 2) {
-    return `${weather.temperature}° outside—this is one of the coolest options nearby`;
+    return planning
+      ? `Around ${weather.temperature}° expected—this is one of the coolest options nearby`
+      : `${weather.temperature}° outside—this is one of the coolest options nearby`;
   }
   if (hour >= 17 && hour <= 20 && quest.category === "sunset") {
-    return "The light is turning now—this is the right moment for the view";
+    return planning
+      ? "The light will be turning by then—the right window for the view"
+      : "The light is turning now—this is the right moment for the view";
   }
   if (EDITORIAL_REASONS[quest.id]) return EDITORIAL_REASONS[quest.id];
   if ((quest.scenicScore ?? 0) >= 9) {
@@ -144,14 +151,22 @@ function reasonFor(
   return "A strong fit for this moment of your day";
 }
 
+export type RecommendationOptions = {
+  /** The moment to rank for — defaults to right now. */
+  at?: Date;
+  count?: number;
+  /** True when ranking for a future start time rather than the live moment. */
+  planning?: boolean;
+};
+
 export function getRecommendations(
   quests: Quest[],
   run: RunState,
   weather: WeatherSnapshot | null,
-  now = new Date(),
-  count = 3,
+  options: RecommendationOptions = {},
 ): Recommendation[] {
-  const hour = now.getHours();
+  const { at = new Date(), count = 3, planning = false } = options;
+  const hour = at.getHours();
 
   return quests
     .filter(
@@ -163,7 +178,7 @@ export function getRecommendations(
     .map((quest) => ({
       quest,
       score: scoreQuest(quest, run, weather, hour),
-      reason: reasonFor(quest, run, weather, hour),
+      reason: reasonFor(quest, run, weather, hour, planning),
     }))
     .sort((a, b) => b.score - a.score || a.quest.driveMinutes - b.quest.driveMinutes)
     .slice(0, count)
