@@ -22,7 +22,7 @@ A scan transaction locks the trip row, checks its unique idempotency key, expire
 
 ## Geography and ranking limitations
 
-Town-center locations link to OpenStreetMap. The route is explicitly schematic, approximate, and not a navigation or driving-time claim. New candidates are assigned the base of the query, not asserted to fall within its radius. The site does not invent property coordinates. Initial automatic ranking uses only established unit-scoped evidence; most candidates therefore have no positive score until reviewed. Verified offers, when a future authorized adapter provides them, precede unverified candidates. The interface exposes missing facts instead of treating a zero score as proof of unsuitability.
+Town-center locations link to OpenStreetMap. The route is explicitly schematic, approximate, and not a navigation or driving-time claim. New candidates are assigned the base of the query, not asserted to fall within its radius. The site does not invent property coordinates. Ranking uses explicit unit-scoped amenities/access/floor, source-backed property coordinates, exact-date freshness, known complete cost and refundability. Missing/conflicting coordinates receive no geographic bonus; outside-radius/north-of-Florence coordinates are flagged. The breakdown is visible per card. Most candidates have no positive amenity score until reviewed. Verified offers, when a future authorized adapter provides them, precede unverified candidates. The interface exposes missing facts instead of treating a zero score as proof of unsuitability.
 
 ## Database privileges
 

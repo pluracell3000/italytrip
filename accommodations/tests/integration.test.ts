@@ -115,6 +115,7 @@ describe.sequential(
       );
       vi.stubEnv("SCANS_ENABLED", "true");
       vi.stubEnv("BRAVE_SEARCH_API_KEY", "test-only-key");
+      vi.stubEnv("BRAVE_STORAGE_RIGHTS_CONFIRMED", "true");
       vi.spyOn(publicWeb, "fetchPropertyDetails").mockResolvedValue({
         outcome: "blocked",
         facts: [],

@@ -3,7 +3,8 @@ import { loadConfig } from "./config";
 import {
   freshOffer,
   completeTotal,
-  suitability,
+  geography,
+  rankReasons,
   fieldState,
   nights,
 } from "./domain";
@@ -66,6 +67,16 @@ export async function getState(admin = false) {
           freshnessHours: config.freshnessHours,
         });
         const total = verified ? completeTotal(offer) : null;
+        const geo = geography(facts, base);
+        const reasons = rankReasons(
+          facts,
+          verified,
+          total,
+          nights(base.checkIn, base.checkOut),
+          config.budgetNightly,
+          offer?.conditions?.refundable === true,
+          geo,
+        );
         return {
           ...u,
           canonicalPropertyId: identityOf(u.property_id),
@@ -85,7 +96,9 @@ export async function getState(admin = false) {
                   config.budgetNightly * 100
                 ? "within"
                 : "over",
-          score: suitability(facts),
+          score: reasons.reduce((sum, r) => sum + r.points, 0),
+          reasons,
+          geography: geo,
           fields: Object.fromEntries(
             [
               "privateOutdoor",
@@ -162,6 +175,7 @@ export async function getState(admin = false) {
           36 * 3600000,
       providers: {
         brave: !!process.env.BRAVE_SEARCH_API_KEY,
+        storageRights: process.env.BRAVE_STORAGE_RIGHTS_CONFIRMED === "true",
         inventory: false,
       },
       scansEnabled: process.env.SCANS_ENABLED === "true",

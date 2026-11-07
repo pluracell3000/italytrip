@@ -15,6 +15,8 @@ export const brave: Provider = {
   async discoverCandidates(_config, query, baseId) {
     const key = process.env.BRAVE_SEARCH_API_KEY;
     if (!key) throw new Error("BRAVE_KEY_MISSING");
+    if (process.env.BRAVE_STORAGE_RIGHTS_CONFIRMED !== "true")
+      throw new Error("BRAVE_STORAGE_RIGHTS_REQUIRED");
     const u = new URL("https://api.search.brave.com/res/v1/web/search");
     u.searchParams.set("q", query);
     u.searchParams.set("count", "10");

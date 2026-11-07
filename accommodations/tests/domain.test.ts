@@ -5,6 +5,8 @@ import {
   priceChange,
   fieldState,
   listingKey,
+  geography,
+  rankReasons,
 } from "../lib/domain";
 import { publicAddress, validateUrl } from "../lib/providers/safe-fetch";
 import { extractDetails } from "../lib/providers/public-web";
@@ -154,4 +156,35 @@ describe("security gates", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+it("ranks source-backed geography, low floor and complete costs without counting unknown evidence", () => {
+  const base = { lat: 43.0775, lng: 11.6789, radiusKm: 25 };
+  expect(geography([], base).fit).toBe("unknown");
+  const e = [
+    {
+      field: "coordinates",
+      scope: "property",
+      value: { lat: 43.0775, lng: 11.6789 },
+    },
+    { field: "floor", scope: "unit", value: 0 },
+  ];
+  const geo = geography(e, base);
+  expect(geo.fit).toBe("within");
+  expect(geo.distanceKm).toBe(0);
+  expect(
+    rankReasons(e, false, null, 7, 350, false, geo).map((r) => r.label),
+  ).toHaveLength(2);
+  expect(
+    geography(
+      [
+        {
+          field: "coordinates",
+          scope: "property",
+          value: { lat: 44, lng: 11 },
+        },
+      ],
+      base,
+    ).fit,
+  ).toBe("outside");
 });

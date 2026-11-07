@@ -5,7 +5,7 @@ Checked 7 November 2026 in an isolated workspace. This document distinguishes im
 ## Passed locally
 
 - TypeScript strict check and production Next.js build.
-- 22 domain/database tests against disposable Postgres-compatible WASM, repeated successfully against **real Postgres 17** in a dedicated Docker database.
+- 23 domain/database tests against disposable Postgres-compatible WASM, repeated successfully against **real Postgres 17** in a dedicated Docker database.
 - Three Chromium mobile browser scenarios, 390 × 844 CSS pixels, backed by **real Postgres**, including two separate authenticated browser contexts.
 - Production dependency audit: zero reported vulnerabilities at this check.
 

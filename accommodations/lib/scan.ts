@@ -62,6 +62,8 @@ export async function scan(trigger: "manual" | "cron", key: string) {
   if (process.env.VERCEL && process.env.VERCEL_ENV !== "production")
     throw new Error("PREVIEW_SCAN_FORBIDDEN");
   if (!process.env.BRAVE_SEARCH_API_KEY) throw new Error("BRAVE_KEY_MISSING");
+  if (process.env.BRAVE_STORAGE_RIGHTS_CONFIRMED !== "true")
+    throw new Error("BRAVE_STORAGE_RIGHTS_REQUIRED");
   const db = await database();
   const acquired = await acquireRun(db, key, trigger);
   if ("existing" in acquired) return acquired.existing!;

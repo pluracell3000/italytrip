@@ -199,6 +199,14 @@ export function Admin({
                 </dd>
               </div>
               <div>
+                <dt>זכויות שמירת תוצאות Brave</dt>
+                <dd>
+                  {data.providers.storageRights
+                    ? "אושרו עבור התוכנית"
+                    : "נדרש אישור זכויות התוכנית בהגדרות השרת"}
+                </dd>
+              </div>
+              <div>
                 <dt>מלאי לתאריכים</dt>
                 <dd>אין ספק מורשה מחובר</dd>
               </div>
@@ -240,6 +248,7 @@ export function Admin({
                   scanning ||
                   !data.scansEnabled ||
                   !data.providers.brave ||
+                  !data.providers.storageRights ||
                   config.paused
                 }
                 onClick={async () => {

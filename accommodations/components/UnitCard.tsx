@@ -95,10 +95,19 @@ export function UnitCard({
           </small>
         )}
         <p className="unit-reason">
-          {u.score > 0
-            ? `יש עדויות ברמת היחידה לפרטים מתאימים (${u.score} נקודות התאמה).`
+          {u.reasons.some((r) => r.points > 0)
+            ? `למה מתאים: ${u.reasons
+                .filter((r) => r.points > 0)
+                .slice(0, 3)
+                .map((r) => r.label)
+                .join(" · ")}.`
             : "נקודת פתיחה לבדיקה באזור שבחרנו. טרם אומתו דרישות הלינה ברמת היחידה."}
         </p>
+        {u.geography.fit === "outside" && (
+          <p className="conflict">
+            קואורדינטות המקור מחוץ לרדיוס המבוקש או מצפון לפירנצה.
+          </p>
+        )}
         <div className="quick-facts">
           <span>
             <Leaf size={15} /> חוץ פרטי:{" "}
@@ -204,6 +213,24 @@ export function UnitCard({
         </button>
         {expanded && (
           <div className="unit-details">
+            <p>
+              מיקום:{" "}
+              {u.geography.fit === "unknown"
+                ? "טרם אומת ברמת הנכס"
+                : `${u.geography.distanceKm} ק״מ בקו אווירי ממרכז הבסיס, לפי קואורדינטות המקור. אינו מרחק נסיעה.`}
+            </p>
+            <details>
+              <summary>איך נקבעת ההתאמה? ({u.score} נקודות)</summary>
+              <p>
+                רק עדויות מפורשות מוסיפות נקודות. מידע לא ידוע או סותר אינו נחשב
+                לאישור.
+              </p>
+              {u.reasons.map((r) => (
+                <p key={r.label}>
+                  {r.label}: <bdi>{r.points}</bdi>
+                </p>
+              ))}
+            </details>
             <dl>
               {Object.entries(fieldLabels).map(([field, label]) => (
                 <div key={field}>
