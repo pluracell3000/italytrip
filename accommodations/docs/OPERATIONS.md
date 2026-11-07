@@ -29,6 +29,7 @@ Set production-only environment variables:
 | ---------------------- | ----------------------------------------------------------------- |
 | `DATABASE_URL`         | Restricted application role, TLS required, pooled Postgres        |
 | `BRAVE_SEARCH_API_KEY` | Production Web Search API key                                     |
+| `BRAVE_STORAGE_RIGHTS_CONFIRMED` | `true` only after verifying the subscribed plan permits persistent storage |
 | `FAMILY_PASSWORD`      | Shared family passphrase, >=16 characters                         |
 | `ADMIN_PASSWORD`       | Different administrator passphrase, >=16 characters               |
 | `SESSION_SECRET`       | Random >=32 characters; rotation revokes sessions                 |
